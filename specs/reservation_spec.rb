@@ -4,9 +4,9 @@ require 'pry'
 describe 'Reservation class' do
 
   before do
-    @new_reservation = Hotel::Reservation.new(Date.new(2018,3,5), Date.new(2018,3,10))
+    @new_reservation = Hotel::Reservation.new(Date.new(2018,3,5), Date.new(2018,3,10), 1)
 
-    @room = @new_reservation.assign_room
+    @room = @new_reservation.assigned_room
   end
 
     it "creates a new instance of Reservation" do

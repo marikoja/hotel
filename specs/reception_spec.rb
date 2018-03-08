@@ -7,39 +7,35 @@ describe 'Reception class' do
     @receptionist = Hotel::Reception.new
     @add_reservation = @receptionist.add_reservation(Date.new(2018,3,5), Date.new(2018,3,10))
   end
-
-  it 'creates a new instance of Reception' do
-    @receptionist.must_be_instance_of Hotel::Reception
+  describe "initialize" do
+    it 'creates a new instance of Reception' do
+      @receptionist.must_be_instance_of Hotel::Reception
+    end
   end
 
-  it "returns an array of all reservations" do
-    @receptionist.reservation_list.must_be_kind_of Array
+  describe "add_reservation" do
+    it "returns an array of all reservations" do
+      @receptionist.reservation_list.must_be_kind_of Array
 
-    @add_reservation.length.must_equal 1
+      @add_reservation.length.must_equal 1
+    end
+
+    it "raises an error when date range is invalid" do
+      proc {@receptionist.add_reservation(Date.new(2018,3,11), Date.new(2018,3,5))}.must_raise ArgumentError
+    end
   end
 
-  it "raises an error when date range is invalid" do
-    proc {@receptionist.add_reservation(Date.new(2018,3,11), Date.new(2018,3,5))}.must_raise ArgumentError
-  end
+  describe 'reservation_by_date' do
+    it "returns the number of reservations for given day" do
+      @receptionist.reservations_by_date(Date.new(2018,3,8)).length.must_equal 1
+      @receptionist.reservations_by_date(Date.new(2018,3,6)).length.must_equal 1
+    end
 
-  it 'reservation_by_date' do
-    @receptionist.reservations_by_date(Date.new(2018,3,8)).length.must_equal 1
-    @receptionist.reservations_by_date(Date.new(2018,3,6)).length.must_equal 1
+    it 'retruns an empty array when no reservations on given date' do
+      @receptionist.reservations_by_date(Date.new(2018,3,16)).must_equal []
+      @receptionist.reservations_by_date(Date.new(2018,3,16)).must_be_empty
+    end
   end
-
-  it 'retruns an empty array when no reservations on given date' do
-    @receptionist.reservations_by_date(Date.new(2018,3,16)).must_equal []
-    @receptionist.reservations_by_date(Date.new(2018,3,16)).must_be_empty
-  end
-  #
-  # it "returns availability of room" do
-  #   @receptionist.room_status((Date.new(2018,3,11)),1).must_equal "Available"
-  # end
-
-  # it "returns an array of available rooms for a given day" do
-  #   @receptionist.availability_by_date(Date.new(2018,3,8)).must_be_kind_of Array
-  #   @receptionist.availability_by_date(Date.new(2018,3,8)).length.must_equal 1
-  # end
 
   it "returns an array of all available rooms for given range" do
     @receptionist.availability_by_date_range(Date.new(2018,3,5), Date.new(2018,3,10)).length.must_equal 19

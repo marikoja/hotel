@@ -4,18 +4,22 @@ require 'date'
 
 module Hotel
   class Reception
-    attr_reader :reservation_list
+    attr_reader :reservation_list#, :assigned_room
     def initialize
       @reservation_list = []
+      # @assigned_room = assign_room
     end
 
-
-# Adds new resercation to reservations array
+# Checks for availabl rooms, assigns room to new_reservation and adds new reservation to reservations array
     def add_reservation(check_in, check_out)
-      new_reservation = Hotel::Reservation.new(check_in, check_out)
+
+      available_room = availability_by_date_range(check_in, check_out).first
+
+      new_reservation = Hotel::Reservation.new(check_in, check_out, available_room)
       if check_in >= check_out
         raise ArgumentError.new "invalid date range"
       end
+      # assign_room(check_in, check_out)
       @reservation_list << new_reservation
       return @reservation_list
     end
@@ -28,29 +32,13 @@ module Hotel
           reservations_on_date << reservation
         end
       end
-      #
-      # # if reservations_on_date.empty?
-      #   return "All rooms available for #{date}"
-      # # end
       return reservations_on_date
     end
 
-    # def availability_by_date(date)
-    #   booked_rooms_on_date = []
-    #
-    #   resercations_by_date(date).each do |reservation|
-    #     booked_rooms_on_date << @assigned_room
-    #   end
-    #
-    #   if booked_rooms_on_date.empty?
-    #     raise ArgumentError.new "No rooms available on #{date}"
-    #   end
-    #   return booked_rooms_on_date
-    # end
-
+# compares each reservation to date range in question and returns an array of rooms available for the given period.
     def availability_by_date_range(check_in, check_out)
         occupied_rooms = []
-        range = (check_in...check_out).to_a
+        range = (check_in...check_out)#.to_a
         @reservation_list.each do |reservation|
           if (range.include? reservation.check_in) || (range.include? reservation.check_out - 1)
             occupied_rooms << reservation.assigned_room
@@ -65,16 +53,6 @@ module Hotel
         end
         return available_rooms
     end
-
-    # def room_status(date, room)
-    #   availability = ""
-    #   if availability_by_date(date).availability_on_date.include? room
-    #      availability = "Available"
-    #   else
-    #     availability = "Booked"
-    #   end
-    #   return availability
-    # end
 
   end
 end
